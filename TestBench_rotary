@@ -1,0 +1,75 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ 
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--USE ieee.numeric_std.ALL;
+ 
+ENTITY Newtest IS
+END Newtest;
+ 
+ARCHITECTURE behavior OF Newtest IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+    COMPONENT rotatory_switch
+    PORT(
+         clk : IN  std_logic;
+         rotary_state : IN  std_logic_vector(1 downto 0);
+         rot_a : OUT  std_logic;
+         rot_b : OUT  std_logic
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal clk : std_logic := '0';
+   signal rotary_state : std_logic_vector(1 downto 0) := (others => '0');
+
+ 	--Outputs
+   signal rot_a : std_logic;
+   signal rot_b : std_logic;
+
+   -- Clock period definitions
+   constant clk_period : time := 10 ns;
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: rotatory_switch PORT MAP (
+          clk => clk,
+          rotary_state => rotary_state,
+          rot_a => rot_a,
+          rot_b => rot_b
+        );
+
+   -- Clock process definitions
+   clk_process :process
+   begin
+		clk <= '0';
+		wait for clk_period/2;
+		clk <= '1';
+		wait for clk_period/2;
+   end process;
+ 
+
+   -- Stimulus process
+   stim_proc: process
+   begin		
+         rotary_state <= "00";
+      wait for 100 ns;	
+rotary_state <= "01";
+      wait for clk_period*10;
+
+rotary_state <= "11" ;
+ wait for clk_period*10;
+rotary_state <= "00";
+wait for clk_period*10;
+rotary_state <= "10";
+wait for clk_period*10;
+rotary_state <= "11";
+
+      wait;
+   end process;
+
+END;

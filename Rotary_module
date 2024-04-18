@@ -1,0 +1,47 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+
+entity prueba_rotary is
+ PORT(
+		clk_50Mhz : in std_logic;
+		rotary_in : IN std_logic_vector(1 downto 0);          
+		rotary_sel1 : OUT std_logic;
+		rotary_sel2 : OUT std_logic
+		);
+end prueba_rotary;
+
+architecture Behavioral of prueba_rotary is
+	COMPONENT Generador
+	PORT(
+		clk1 : IN std_logic;
+		rst : IN std_logic;          
+		q : OUT std_logic
+		 );
+	END COMPONENT;
+	
+	COMPONENT rotatory_switch
+	PORT(
+		clk : IN std_logic;
+		rotary_state : IN std_logic_vector(1 downto 0);          
+		rot_a : OUT std_logic;
+		rot_b : OUT std_logic
+		);
+	END COMPONENT;
+   signal q, rotary_sel, rotary_sel0 : std_logic ;
+begin
+	Inst_Generador: Generador PORT MAP(
+		clk1 => clk_50Mhz ,
+		rst => '0',
+		q => q
+		); 
+		
+	Inst_rotatory_switch: rotatory_switch PORT MAP(
+		clk => q ,
+		rotary_state => rotary_in ,
+		rot_a => rotary_sel0, 
+		rot_b => rotary_sel
+	);
+rotary_sel1 <= rotary_sel0;
+rotary_sel2 <= rotary_sel;
+end Behavioral;

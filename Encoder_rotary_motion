@@ -1,0 +1,59 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.numeric_std.all;
+use IEEE.std_logic_unsigned.all;
+
+
+entity rotatory_switch is
+    Port ( clk : in  STD_LOGIC;
+           rotary_state : in  STD_LOGIC_VECTOR (1 downto 0);
+			 --rotary_sel: out STD_LOGIC_VECTOR (1 downto 0)
+			 rot_a, rot_b: out STD_LOGIC
+			 );
+end rotatory_switch;
+
+architecture Behavioral of rotatory_switch is
+
+signal rotary_q1,  previous_rotary_q1, rotary_q2: STD_LOGIC;
+signal rotary_event: STD_LOGIC := '0';
+signal rotary_direction : std_logic:= '1';
+begin
+
+rotary_filter: process(clk)
+		begin
+	if clk'event and clk='1' then
+	  
+		case rotary_state is
+			when "00" => rotary_q1 <= '0'; -- no motion
+				rotary_q2 <= rotary_q2;
+			when "01" => rotary_q1 <= rotary_q1; --turning left
+				rotary_q2 <= '0';
+			when "10" => rotary_q1 <= rotary_q1; --turning right
+				rotary_q2 <= '1';
+			when "11" => rotary_q1 <= '1';  --ending the motion
+				rotary_q2 <= rotary_q2;
+			when others => rotary_q1 <= rotary_q1;
+				rotary_q2 <= rotary_q2;
+		end case;
+	end if;
+		end process rotary_filter;
+		
+	--q2=1 when turning left and q=0 when turning right
+	direction: process(clk)
+		begin
+		 if clk'event and clk='1' then
+			previous_rotary_q1 <= rotary_q1;
+		  if rotary_q1='1' and previous_rotary_q1='0' then
+			rotary_event <= '1';
+		   rotary_direction <= rotary_q2;
+		  else
+			rotary_event <= '0';
+			rotary_direction <= rotary_direction;
+		  end if;
+		end if;
+	end process direction;
+	--rotary_sel <= rotary_event & rotary_direction;
+	rot_a <= rotary_direction;
+rot_b <= rotary_event;
+end Behavioral;
+
